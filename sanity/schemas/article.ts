@@ -16,12 +16,6 @@ export default {
       options: { source: 'title', maxLength: 96 },
     },
     {
-  name: 'doi',
-  title: 'DOI',
-  type: 'string',
-  description: 'Full DOI URL, e.g. https://doi.org/10.10399/JBSE.2026122934',
-},
-    {
       name: 'authors',
       title: 'Authors',
       type: 'array',
@@ -29,24 +23,44 @@ export default {
     },
     { name: 'pageStart', title: 'Page Start', type: 'number' },
     { name: 'pageEnd', title: 'Page End', type: 'number' },
+
+    // ── DOI section ──────────────────────────────────────────────
     {
-      name: 'pdfFile',
-      title: 'PDF File (Upload here)',
+      name: 'doi',
+      title: 'DOI Display Text',
+      type: 'string',
+      description: 'The DOI text shown as the link label, e.g. https://doi.org/10.10399/JBSE.2026122934',
+    },
+    {
+      name: 'doiPdfFile',
+      title: 'DOI PDF File',
       type: 'file',
       options: { accept: 'application/pdf' },
-      description: 'Upload the PDF directly',
+      description: 'Upload the PDF that opens when the DOI link is clicked',
+    },
+
+    // ── Article PDF (PDF button) ──────────────────────────────────
+    {
+      name: 'pdfFile',
+      title: 'Article PDF File (PDF button)',
+      type: 'file',
+      options: { accept: 'application/pdf' },
+      description: 'Upload the PDF that opens when the PDF button is clicked',
     },
     {
       name: 'pdfExternalUrl',
-      title: 'PDF External URL (optional)',
+      title: 'Article PDF External URL (optional)',
       type: 'string',
-      description: 'Only if PDF is hosted externally',
+      description: 'Only if PDF is hosted externally. Ignored when a file is uploaded above.',
     },
+
+    // ── Content ───────────────────────────────────────────────────
     {
       name: 'abstract',
       title: 'Abstract',
       type: 'text',
-      rows: 4,
+      rows: 6,
+      description: 'Separate paragraphs with a blank line.',
     },
     {
       name: 'keywords',

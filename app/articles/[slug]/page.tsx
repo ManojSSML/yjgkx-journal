@@ -13,11 +13,11 @@ interface Article {
   authors: string[];
   pageStart: number;
   pageEnd: number;
-  doi?: string;
+  doi?: string;         // Display text for DOI (e.g. https://doi.org/10.xxx)
+  doiPdfUrl?: string;   // Uploaded PDF asset URL — DOI link opens this
   abstract?: string;
   keywords?: string[];
-  pdfUrl?: string;
-  pdfFile?: { asset: { url: string } };
+  pdfUrl?: string;      // PDF button URL (same uploaded file)
   slug?: { current: string };
 }
 
@@ -29,6 +29,7 @@ const fallbackArticle: Article = {
   pageStart: 1,
   pageEnd: 21,
   doi: 'https://doie.org/10.10399/JBSE.2026122934',
+  doiPdfUrl: '#',
   abstract: `Networks – on – Chip (NoCs) have gained popularity as the most dominant interconnect paradigm for many-core and accelerator-rich Systems-on-Chip (SoCs). Among the many topologies available, the two-dimensional (2D) mesh topology serves as the canonical architectural template. This survey presents a concise review of 2D mesh–based NoC architectures.\n\nRouting algorithms are classified into deterministic, partially adaptive, fully adaptive, and non-minimal categories. A concise survey of popular routing strategy till date has been discussed for mesh NoC topology along with the advantages and disadvantages of the routing strategy.`,
   keywords: ['Network – On – Chip', 'Routing Algorithm', 'Adaptive', 'Partially Adaptive', 'Hybrid routing.'],
   pdfUrl: '#',
@@ -61,8 +62,6 @@ const articlePageStyles = `
   .article-main {
     flex: 1;
     min-width: 0;
-    /* Submit Manuscript btn = 48.2px height + 9px margin-bottom = 57.2px
-       This pushes article content to start level with the Indexed By bar */
     margin-top: 57.2px;
   }
 
@@ -70,7 +69,7 @@ const articlePageStyles = `
   .article-title {
     font-size: 22px;
     font-weight: 700;
-    color: #5D6778;
+    color: #1a1a2e;
     line-height: 1.45;
     margin: 0 0 10px 0;
     font-family: 'IBM Plex Sans', Arial, sans-serif;
@@ -79,7 +78,7 @@ const articlePageStyles = `
   /* DOI */
   .article-doi-row {
     font-size: 15px;
-    color: #5D6778;
+    color: #333;
     margin: 0 0 10px 0;
     line-height: 1.5;
   }
@@ -87,6 +86,7 @@ const articlePageStyles = `
     color: #1155cc;
     text-decoration: none;
     word-break: break-all;
+    cursor: pointer;
   }
   .article-doi-link:hover {
     text-decoration: underline;
@@ -95,7 +95,7 @@ const articlePageStyles = `
   /* Authors */
   .article-authors {
     font-size: 15px;
-    color: #5D6778;
+    color: #444;
     margin: 0 0 28px 0;
     line-height: 1.5;
   }
@@ -107,12 +107,12 @@ const articlePageStyles = `
   .article-section-label {
     font-size: 16px;
     font-weight: 700;
-    color: #5D6778;
+    color: #111;
     margin: 0 0 5px 0;
   }
   .article-keywords-text {
-    font-size: 16px;
-    color: #5D6778;
+    font-size: 15px;
+    color: #333;
     line-height: 1.65;
     margin: 0;
   }
@@ -124,20 +124,20 @@ const articlePageStyles = `
   .article-abstract-label {
     font-size: 16px;
     font-weight: 700;
-    color: #5D6778;
+    color: #111;
     margin: 0 0 10px 0;
   }
   .article-abstract-para-indented {
-    font-size: 16px;
-    color: #5D6778;
+    font-size: 15px;
+    color: #333;
     line-height: 1.75;
     margin: 0 0 16px 0;
     text-align: justify;
     padding-left: 12px;
   }
   .article-abstract-para {
-    font-size: 16px;
-    color: #5D6778;
+    font-size: 15px;
+    color: #333;
     line-height: 1.75;
     margin: 0 0 16px 0;
     text-align: justify;
@@ -147,13 +147,20 @@ const articlePageStyles = `
     margin-bottom: 0;
   }
 
+  /* DOI missing notice (dev only) */
+  .article-doi-missing {
+    font-size: 13px;
+    color: #999;
+    font-style: italic;
+    margin: 0 0 10px 0;
+  }
 
   /* PDF button */
   .article-pdf-btn {
     display: inline-block;
     background-color: #0d7070;
     color: #fff;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     padding: 10px 32px;
     border-radius: 2px;
@@ -177,7 +184,11 @@ const articlePageStyles = `
 `;
 
 // ---------- data fetching ----------
-async function getArticleData(slug: string): Promise<{ article: Article; journalInfo: typeof fallbackJournalInfo; fromSanity: boolean }> {
+async function getArticleData(slug: string): Promise<{
+  article: Article;
+  journalInfo: typeof fallbackJournalInfo;
+  fromSanity: boolean;
+}> {
   if (
     process.env.NEXT_PUBLIC_SANITY_PROJECT_ID &&
     process.env.NEXT_PUBLIC_SANITY_PROJECT_ID !== 'your_project_id'
@@ -195,8 +206,8 @@ async function getArticleData(slug: string): Promise<{ article: Article; journal
           doi,
           abstract,
           keywords,
-          "pdfUrl": pdfExternalUrl,
-          "pdfFileUrl": pdfFile.asset->url,
+          "pdfUrl": coalesce(pdfFile.asset->url, pdfExternalUrl),
+          "doiPdfUrl": doiPdfFile.asset->url,
           slug
         }`,
         { slug }
@@ -206,15 +217,9 @@ async function getArticleData(slug: string): Promise<{ article: Article; journal
         `*[_type == "journalInfo"][0]{ email, year, sjrScore, quartile }`
       );
 
-      console.log('✅ Sanity article fetched:', JSON.stringify(article, null, 2));
-
       if (article) {
-        const resolvedArticle = {
-          ...article,
-          pdfUrl: article.pdfFileUrl || article.pdfUrl || '#',
-        };
         return {
-          article: resolvedArticle,
+          article,
           journalInfo: journalInfo || fallbackJournalInfo,
           fromSanity: true,
         };
@@ -234,7 +239,12 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   if (!article) notFound();
 
   const authorStr = Array.isArray(article.authors) ? article.authors.join(', ') : '';
-  const pdfHref = article.pdfUrl || '#';
+
+  // DOI link opens the uploaded PDF; falls back to doi URL itself if no PDF uploaded
+  const doiHref = article.doiPdfUrl || (article.doi?.startsWith('http') ? article.doi : '#');
+
+  // PDF button also uses the uploaded PDF
+  const pdfHref = article.pdfUrl || doiHref || '#';
 
   const abstractParagraphs = article.abstract
     ? article.abstract.split(/\n+/).filter((p) => p.trim().length > 0)
@@ -249,18 +259,18 @@ export default async function ArticlePage({ params }: { params: { slug: string }
       <main className="article-page-wrap">
         <div className="article-page-layout">
 
-          {/* ── Main content — starts level with Indexed By ── */}
+          {/* ── Main content ── */}
           <div className="article-main">
 
             {/* Title */}
             <h1 className="article-title">{article.title}</h1>
 
-            {/* DOI — dynamically from Sanity */}
+            {/* DOI — display text is the doi field, href opens the uploaded PDF */}
             {article.doi ? (
               <p className="article-doi-row">
                 DOI:{' '}
                 <a
-                  href={article.doi.startsWith('http') ? article.doi : `https://doi.org/${article.doi}`}
+                  href={doiHref}
                   className="article-doi-link"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -304,7 +314,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
               </div>
             )}
 
-            {/* PDF button */}
+            {/* PDF button — same uploaded PDF */}
             <a
               href={pdfHref}
               className="article-pdf-btn"
