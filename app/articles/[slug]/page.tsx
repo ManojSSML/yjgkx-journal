@@ -183,7 +183,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
     ? article.pdfUrl
     : doiHref;
   const abstractParagraphs = article.abstract
-    ? article.abstract.split(/\n+/).filter((p) => p.trim().length > 0)
+    ? article.abstract.split(/\n+/).filter((p: string) => p.trim().length > 0)
     : [];
 
   return (
