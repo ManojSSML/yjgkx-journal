@@ -216,7 +216,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             {abstractParagraphs.length > 0 && (
               <div className="article-abstract-block">
                 <p className="article-abstract-label">Abstract:</p>
-                {abstractParagraphs.map((para, i) => (
+                {abstractParagraphs.map((para: string, i: number) => (
                   <p key={i} className="article-abstract-para">{para}</p>
                 ))}
               </div>
