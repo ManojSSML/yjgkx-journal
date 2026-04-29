@@ -4,7 +4,7 @@ import { client } from './sanity';
 export async function getJournalInfo() {
   return client.fetch(
     `*[_type == "journalInfo"][0]{
-      chineseTitle, englishTitle, publisher, issn,
+      chineseTitle, publisher, issn,
       subjectArea, email, sjrScore, quartile, year, currentIssueLabel
     }`,
     {},
@@ -24,6 +24,7 @@ export async function getCurrentIssue() {
           defined(pdfFile.asset) => pdfFile.asset->url,
           null
         ),
+        "pdfRef": pdfFile.asset->_id,
         slug
       }
     }`,

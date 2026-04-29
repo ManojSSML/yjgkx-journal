@@ -5,6 +5,7 @@ interface Article {
   pageStart: number;
   pageEnd: number;
   pdfUrl?: string;
+  pdfRef?: string;
   slug?: { current: string };
 }
 
@@ -21,11 +22,24 @@ const articleCardStyles = `
   }
 `;
 
-function getProxyPdfUrl(sanityUrl?: string): string {
-  if (!sanityUrl) return '#';
-  const match = sanityUrl.match(/\/files\/[^/]+\/[^/]+\/(.+)$/);
-  if (match) return `/api/pdf/${match[1]}`;
-  return sanityUrl;
+function getProxyPdfUrl(pdfRef?: string, pdfUrl?: string): string {
+  // pdfRef looks like: file-abc123def456-pdf
+  // We convert it to: /api/pdf/abc123def456.pdf
+  if (pdfRef) {
+    // Sanity asset _id format: file-{hash}-{extension}
+    const match = pdfRef.match(/^file-([a-f0-9]+)-(\w+)$/);
+    if (match) {
+      return `/api/pdf/${match[1]}.${match[2]}`;
+    }
+  }
+
+  // Fallback: parse from full CDN URL
+  if (pdfUrl) {
+    const match = pdfUrl.match(/\/files\/[^/]+\/[^/]+\/(.+)$/);
+    if (match) return `/api/pdf/${match[1]}`;
+  }
+
+  return '#';
 }
 
 export default function ArticleCard({ article }: { article: Article }) {
@@ -35,7 +49,7 @@ export default function ArticleCard({ article }: { article: Article }) {
     ? `/articles/${article.slug.current}`
     : '#';
 
-  const pdfHref = getProxyPdfUrl(article.pdfUrl);
+  const pdfHref = getProxyPdfUrl(article.pdfRef, article.pdfUrl);
 
   return (
     <>
