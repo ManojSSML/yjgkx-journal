@@ -149,7 +149,7 @@ export default async function HomePage() {
               </div>
 
               <a
-                href="/archives"
+                href="/"
                 style={{ backgroundColor: '#0d7070', color: '#fff', fontSize: '15px', padding: '10px 20px', display: 'inline-block', marginTop: '16px', borderRadius: '2px', fontFamily: "'IBM Plex Sans', sans-serif" }}
               >
                 View all issue &gt;

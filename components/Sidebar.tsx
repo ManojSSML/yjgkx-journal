@@ -73,7 +73,7 @@ export default function Sidebar({ sjrScore = '0.27', quartile = 'Q3' }: { sjrSco
 
       <div className="sidebar-wrap">
         {/* Submit Manuscript — 306 x 48.2 */}
-        <a href="/submit" className="sidebar-submit">
+        <a href="/" className="sidebar-submit">
           Submit Manuscript
         </a>
 
