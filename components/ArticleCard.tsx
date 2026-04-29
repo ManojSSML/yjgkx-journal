@@ -1,3 +1,5 @@
+import { toProxyUrl } from '../lib/pdfProxy';
+
 interface Article {
   _id: string;
   title: string;
@@ -22,43 +24,17 @@ const articleCardStyles = `
   }
 `;
 
-function getProxyPdfUrl(pdfRef?: string, pdfUrl?: string): string {
-  // pdfRef looks like: file-abc123def456-pdf
-  // We convert it to: /api/pdf/abc123def456.pdf
-  if (pdfRef) {
-    // Sanity asset _id format: file-{hash}-{extension}
-    const match = pdfRef.match(/^file-([a-f0-9]+)-(\w+)$/);
-    if (match) {
-      return `/api/pdf/${match[1]}.${match[2]}`;
-    }
-  }
-
-  // Fallback: parse from full CDN URL
-  if (pdfUrl) {
-    const match = pdfUrl.match(/\/files\/[^/]+\/[^/]+\/(.+)$/);
-    if (match) return `/api/pdf/${match[1]}`;
-  }
-
-  return '#';
-}
-
 export default function ArticleCard({ article }: { article: Article }) {
   const authorStr = Array.isArray(article.authors) ? article.authors.join(', ') : '';
-
-  const articleHref = article.slug?.current
-    ? `/articles/${article.slug.current}`
-    : '#';
-
-  const pdfHref = getProxyPdfUrl(article.pdfRef, article.pdfUrl);
+  const articleHref = article.slug?.current ? `/articles/${article.slug.current}` : '#';
+  const pdfHref = toProxyUrl(article.pdfUrl);
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: articleCardStyles }} />
       <div style={{ marginBottom: '24px', fontFamily: "'IBM Plex Sans', sans-serif" }}>
         <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '1px', lineHeight: 1.4 }}>
-          <a href={articleHref} className="article-title-link">
-            {article.title}
-          </a>
+          <a href={articleHref} className="article-title-link">{article.title}</a>
         </h3>
         {authorStr && (
           <p style={{ fontSize: '16px', color: '#444', marginBottom: '4px' }}>{authorStr}</p>

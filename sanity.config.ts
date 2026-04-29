@@ -7,7 +7,7 @@ export default defineConfig({
   name: 'default',
   title: 'YJGKX Journal CMS',
 
-  projectId: 'pmm6borr',
+projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
 
   plugins: [structureTool(), visionTool()],

@@ -5,25 +5,54 @@ export async function GET(
   { params }: { params: { slug: string[] } }
 ) {
   const filePath = params.slug.join('/');
-  const sanityUrl = `https://cdn.sanity.io/files/jo6fxsyw/production/${filePath}`;
+  const token = process.env.SANITY_API_TOKEN;
+
+  // Build both possible Sanity URL formats
+ const sanityUrl = `https://cdn.sanity.io/files/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/production/${filePath}`;
+
+  console.log('Token present:', !!token);
+  console.log('Token prefix:', token?.substring(0, 10));
+  console.log('Fetching:', sanityUrl);
 
   try {
-    const response = await fetch(sanityUrl);
+    // Try 1: with Bearer token
+    const res1 = await fetch(sanityUrl, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    });
 
-    if (!response.ok) {
-      return new NextResponse('File not found', { status: 404 });
+    console.log('With token status:', res1.status);
+
+    if (res1.ok) {
+      const buf = await res1.arrayBuffer();
+      return new NextResponse(buf, {
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': 'inline',
+        },
+      });
     }
 
-    const pdfBuffer = await response.arrayBuffer();
+    // Try 2: without token (some Sanity files are public)
+    const res2 = await fetch(sanityUrl, { cache: 'no-store' });
+    console.log('Without token status:', res2.status);
 
-    return new NextResponse(pdfBuffer, {
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': 'inline',
-        'Cache-Control': 'public, max-age=31536000',
-      },
-    });
+    if (res2.ok) {
+      const buf = await res2.arrayBuffer();
+      return new NextResponse(buf, {
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': 'inline',
+        },
+      });
+    }
+
+    return new NextResponse(
+      `File not found. Token present: ${!!token}. Status with token: ${res1.status}. Status without: ${res2.status}. URL: ${sanityUrl}`,
+      { status: 404 }
+    );
+
   } catch (error) {
-    return new NextResponse('Error fetching file', { status: 500 });
+    return new NextResponse(`Error: ${error}`, { status: 500 });
   }
 }
