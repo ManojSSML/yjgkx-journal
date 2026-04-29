@@ -5,12 +5,12 @@ import { useState } from 'react';
 
 const navLinks = [
   { label: 'Home', href: '/' },
-  { label: 'About the journal', href: '/about' },
-  { label: 'Archives', href: '/archives' },
-  { label: 'Aims & Scope', href: '/aims-scope' },
-  { label: 'Special Issues', href: '/special-issues' },
-  { label: 'Indexing', href: '/indexing' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'About the journal', href: 'https://www.scopus.com/sourceid/94558' },
+  { label: 'Archives', href: '/' },
+  { label: 'Aims & Scope', href: '/' },
+  { label: 'Special Issues', href: '/' },
+  { label: 'Indexing', href: '/' },
+  { label: 'Contact', href: '/' },
 ];
 
 const headerStyles = `
