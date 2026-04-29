@@ -1,0 +1,190 @@
+[
+  {
+    "fields": [
+      {
+        "description": "e.g. Yingyong Jichu yu Gongcheng Kexue Xuebao/Journal of Basic Science and Engineering",
+        "name": "chineseTitle",
+        "type": "string",
+        "title": "Journal Title (shown in header)"
+      },
+      {
+        "name": "englishTitle",
+        "type": "string"
+      },
+      {
+        "name": "publisher",
+        "type": "string"
+      },
+      {
+        "name": "issn",
+        "type": "string",
+        "title": "ISSN"
+      },
+      {
+        "name": "subjectArea",
+        "type": "string"
+      },
+      {
+        "name": "email",
+        "type": "string",
+        "title": "Contact Email"
+      },
+      {
+        "name": "sjrScore",
+        "type": "string",
+        "title": "SJR Score"
+      },
+      {
+        "name": "quartile",
+        "type": "string",
+        "title": "Quartile (e.g. Q3)"
+      },
+      {
+        "name": "year",
+        "type": "string",
+        "title": "Copyright Year"
+      },
+      {
+        "description": "e.g. CURRENT ISSUE — shown as section heading above articles",
+        "name": "currentIssueLabel",
+        "type": "string"
+      }
+    ],
+    "name": "journalInfo",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "authors",
+        "type": "array"
+      },
+      {
+        "name": "pageStart",
+        "type": "number"
+      },
+      {
+        "name": "pageEnd",
+        "type": "number"
+      },
+      {
+        "description": "The DOI text shown as the link label, e.g. https://doi.org/10.10399/JBSE.2026122934",
+        "name": "doi",
+        "type": "string",
+        "title": "DOI Display Text"
+      },
+      {
+        "options": {
+          "accept": "application/pdf"
+        },
+        "description": "Upload the PDF that opens when the DOI link is clicked",
+        "name": "doiPdfFile",
+        "type": "file",
+        "title": "DOI PDF File"
+      },
+      {
+        "options": {
+          "accept": "application/pdf"
+        },
+        "description": "Upload the PDF that opens when the PDF button is clicked",
+        "name": "pdfFile",
+        "type": "file",
+        "title": "Article PDF File (PDF button)"
+      },
+      {
+        "description": "Only if PDF is hosted externally. Ignored when a file is uploaded above.",
+        "name": "pdfExternalUrl",
+        "type": "string",
+        "title": "Article PDF External URL (optional)"
+      },
+      {
+        "rows": 6,
+        "description": "Separate paragraphs with a blank line.",
+        "name": "abstract",
+        "type": "text"
+      },
+      {
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "keywords",
+        "type": "array"
+      }
+    ],
+    "name": "article",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "name": "volume",
+        "type": "number"
+      },
+      {
+        "name": "number",
+        "type": "number"
+      },
+      {
+        "name": "year",
+        "type": "number"
+      },
+      {
+        "of": [
+          {
+            "to": [
+              {
+                "type": "article"
+              }
+            ],
+            "type": "reference",
+            "title": "Reference to article"
+          }
+        ],
+        "name": "articles",
+        "type": "array"
+      }
+    ],
+    "name": "issue",
+    "type": "document"
+  }
+]

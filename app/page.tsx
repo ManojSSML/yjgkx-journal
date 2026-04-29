@@ -10,7 +10,7 @@ const fallbackJournalInfo = {
   publisher: 'Editorial Board of Journal of Basic Science and Engineering',
   issn: '1005-0930',
   subjectArea: 'Engineering: General Engineering',
-  email: 'info@yjgkx.org',
+  email: 'editor@domain',
   sjrScore: '0.27',
   quartile: 'Q3',
   year: '2026',
@@ -165,7 +165,7 @@ export default async function HomePage() {
         </div>
       </main>
 
-      <Footer year={journalInfo?.year || '2026'} email={journalInfo?.email || 'info@yjgkx.org'} />
+      <Footer year={journalInfo?.year || '2026'} email={journalInfo?.email || 'editor@domain'} />
     </div>
   );
 }

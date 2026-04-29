@@ -21,15 +21,21 @@ const articleCardStyles = `
   }
 `;
 
+function getProxyPdfUrl(sanityUrl?: string): string {
+  if (!sanityUrl) return '#';
+  const match = sanityUrl.match(/\/files\/[^/]+\/[^/]+\/(.+)$/);
+  if (match) return `/api/pdf/${match[1]}`;
+  return sanityUrl;
+}
+
 export default function ArticleCard({ article }: { article: Article }) {
   const authorStr = Array.isArray(article.authors) ? article.authors.join(', ') : '';
 
-  // Article detail page link — uses slug if available, otherwise falls back to #
   const articleHref = article.slug?.current
     ? `/articles/${article.slug.current}`
     : '#';
 
-  const pdfHref = article.pdfUrl || '#';
+  const pdfHref = getProxyPdfUrl(article.pdfUrl);
 
   return (
     <>
@@ -48,6 +54,8 @@ export default function ArticleCard({ article }: { article: Article }) {
         </p>
         <a
           href={pdfHref}
+          target="_blank"
+          rel="noopener noreferrer"
           style={{
             backgroundColor: '#0d7070', color: '#fff', fontSize: '14px',
             fontWeight: '600', padding: '5px 14px', borderRadius: '2px', display: 'inline-block',

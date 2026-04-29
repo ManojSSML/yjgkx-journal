@@ -37,7 +37,7 @@ const fallbackArticle: Article = {
 };
 
 const fallbackJournalInfo = {
-  email: 'info@yjgkx.org',
+  email: 'editor@domain',
   year: '2026',
   sjrScore: '0.27',
   quartile: 'Q3',
@@ -336,7 +336,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
       <Footer
         year={journalInfo?.year || '2026'}
-        email={journalInfo?.email || 'info@yjgkx.org'}
+        email={journalInfo?.email || 'editor@domain'}
       />
     </div>
   );
